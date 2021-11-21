@@ -1,40 +1,7 @@
 # Description
 
-This project is intended to provide an easy and efficient way to exchange tokens and XTZ on Tezos blockchain in a wide number of directions. Using smart contracts listed in this repo users can add their tokens to exchange, provide liquidity, and potentially make a profit in a fully decentralized way.
+This project is a fork of quipuswap and adds logic that makes defi into a game with on chain scoring metrics and player levels calculated on chain.
 
-The current implementation supports [FA1.2](https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-7/tzip-7.md) and [FA2](https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md).
-
-# Architecture
-
-![Architecture](Architecture.png)
-
-The solution consists of 6 types of contracts:
-
-1. `Factory` - singleton used to deploy new TokenX-XTZ exchange pair;
-2. `Dex` - contract for TokenX-XTZ pair exchanges;
-3. `TTDex` - contract for TokenX-TokenY pair exchanges;
-4. `Token` - FA token implementation.
-5. `BakerRegistry` - bakery registrar.
-6. `MetadataStorage` - contract to store and upgrade the shares token metadata.
-
-# Project structure
-
-```
-.
-├──  ci/ # scripts for continues integration
-├──  contracts/ # contracts
-|──────── main/ # the contracts to be compiled
-|──────── partial/ # the code parts imported by main contracts
-├──  test/ # test cases
-├──  storage/ # initial storage for contract originations
-├──  scripts/ # cli for dex/factory actions
-├──  test.md # cases covered by tests
-├──  README.md # current file
-├──  .env
-├──  .gitignore
-├──  package.json
-└──  Architecture.png
-```
 
 # Prerequisites
 
