@@ -41,9 +41,14 @@ describe("BuildLevel()", function() {
 
         console.log("Scorer")
         console.log("Storage: %s", await scorer.storage())
+        console.log(scorer)
     });
 
-    it("correctly sets up storage", async () => {
+    it("buys tokens and swaps from quipu", async () => {
+        await scorer.methods.buy(4)
+    })
 
+    it("sells tokens and swaps from quipu", async () => {
+        await scorer.methods.sell(4)
     })
 })
