@@ -7,10 +7,14 @@ const accounts = require('../../scripts/sandbox/accounts')
 describe("BuildLevel()", function() {
     this.timeout(1000000)
 
+    let scorer;
+
     beforeEach(async () => {
         console.log("BuildLevel Test")
         const tezos = new TezosToolkit('http://localhost:8732');
         tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
+
+        const ranks = new MichelsonMap();
 
         const levelStorage = {
             trading_pair : accounts.alice.pkh, // contract of quipu contract
@@ -18,7 +22,7 @@ describe("BuildLevel()", function() {
             score : 1,
             streak : 0,
             current_rank : 0,
-            possible_ranks : new MichelsonMap(),
+            possible_ranks : ranks,
             multiplier : 1,
             owner : accounts.alice.pkh,
         }
@@ -32,7 +36,11 @@ describe("BuildLevel()", function() {
             return originationOp.contract();
           }).then((contract) => {
             console.log(`Origination completed.`);
+            scorer = contract
           }).catch((error) => console.log(`Error: ${JSON.stringify(error, null, 2)}`));
+
+        console.log("Scorer")
+        console.log("Storage: %s", await scorer.storage())
     });
 
     it("correctly sets up storage", async () => {

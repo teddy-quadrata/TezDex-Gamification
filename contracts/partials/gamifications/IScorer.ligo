@@ -1,12 +1,5 @@
 (* achivements *)
-type badge is
-| Bronze
-| Silver
-| Gold
-| Platnum
-| Osmium
-
-type ranks is map (nat, badge)
+type ranks is map (nat, string)
 
 type buy_params is nat
 type sell_params is nat
