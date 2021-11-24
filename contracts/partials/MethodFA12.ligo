@@ -6,7 +6,7 @@ function get_allowance (const owner_account : account_info; const spender : addr
   end;
 
 (* Transfer token to another account *)
-function transfer (const p : token_action; const s : dex_storage; const this : address) : return is
+function transfer (const p : token_action; var s : dex_storage; const this : address) : return is
   block {
     var operations: list(operation) := list[];
     case p of
@@ -17,7 +17,7 @@ function transfer (const p : token_action; const s : dex_storage; const this : a
       if params.0 = params.1.0 then
         failwith("Dex/selt-transfer")
       else skip;
-      const sender_account : account_info = get_account(params.0, s);
+      var sender_account : account_info = get_account(params.0, s);
       if sender_account.balance < value then
         failwith("Dex/not-enough-balance")
       else skip;
