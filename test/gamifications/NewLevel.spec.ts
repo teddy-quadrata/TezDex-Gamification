@@ -30,8 +30,8 @@ function getLevelStorage() {
 function getDexStorage() {
 
     const storage = {
-        tez_pool            : 0,
-        token_pool          : 0,
+        tez_pool            : 1300, // make sure tez_pool/token_pool state vars are updated to reflect simulation values
+        token_pool          : 1000,
         token_address       : "KT1VYsVfmobT7rsMVivvZ4J8i3bPiqz12NaH", // address of token to be traded
         baker_validator     : "KT1LcPGQzWWaqBdJKH32fn6RQXVeZPgutDqw",
         total_supply        : 0,
@@ -52,8 +52,6 @@ function getDexStorage() {
         last_update_time    : "2021-11-21T08:34:42Z",
         period_finish       : "2021-11-21T08:34:42Z",
         user_rewards        :  MichelsonMap.fromLiteral({})
-
-
     }
 
     const fullDexStorage = {
@@ -78,6 +76,8 @@ describe("BuildLevel()", function () {
         const tezos = new TezosToolkit('http://localhost:8732');
         tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
 
+        // deploy wxtz
+
         await tezos.contract.originate({
             code: dexJsonCode.text_code,
             storage: getDexStorage(),
@@ -88,6 +88,9 @@ describe("BuildLevel()", function () {
             console.log(`Dex Origination completed.`);
             dex = contract
         }).catch((error) => console.log(`Dex Error: ${JSON.stringify(error, null, 2)}`));
+
+        // give Dex KT 1300 tez
+        // give Dex KT 1000 wxtz tokens
 
         await tezos.contract.originate({
             code: scorerJsonCode.text_code,
