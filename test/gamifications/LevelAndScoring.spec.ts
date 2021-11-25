@@ -137,10 +137,10 @@ describe("BuildLevel()", function () {
         // give Dex KT 1000 wxtz tokens
         const storage = await wxtz.storage()
         console.log("admin")
-        console.log(await storage['standards']['tokens'].get(accounts.alice.pkh))
-        const op = await wxtz.methods.mint(accounts.alice.pkh, 1000).send()
+        console.log(await storage['standards']['tokens'].get(dex.address))
+        const op = await wxtz.methods.mint(dex.address, 1000).send()
         await op.confirmation()
-        console.log(await storage['standards']['tokens'].get(accounts.alice.pkh))
+        console.log(await storage['standards']['tokens'].get(dex.address))
 
         await tezos.contract.originate({
             code: scorerJsonCode.text_code,
