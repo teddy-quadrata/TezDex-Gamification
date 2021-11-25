@@ -7,7 +7,6 @@ import TTDex from "../storage/TTDex";
 
 const scorerJsonCode = require('../../contracts/main/gamifications/Scorer.tz.json')
 const dexJsonCode = require('../../contracts/main/DexFA12.tz.json')
-const dexJsonStorage = require("../../storage/dex.storage.json")
 const accounts = require('../../scripts/sandbox/accounts')
 
 function getLevelStorage() {
@@ -77,7 +76,6 @@ describe("BuildLevel()", function () {
         tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
 
         // deploy wxtz
-
         await tezos.contract.originate({
             code: dexJsonCode.text_code,
             storage: getDexStorage(),
@@ -88,6 +86,9 @@ describe("BuildLevel()", function () {
             console.log(`Dex Origination completed.`);
             dex = contract
         }).catch((error) => console.log(`Dex Error: ${JSON.stringify(error, null, 2)}`));
+
+        console.log(dex.methods)
+        console.log(await dex.storage())
 
         // give Dex KT 1300 tez
         // give Dex KT 1000 wxtz tokens
