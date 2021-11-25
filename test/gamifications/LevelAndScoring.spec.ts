@@ -67,6 +67,8 @@ function getExtendedFA12(admin) {
 
     const allowances = new MichelsonMap()
 
+    const token_metadata = new MichelsonMap()
+
     const storage = {
         tokens: tokens,
         allowances: allowances,
@@ -75,8 +77,10 @@ function getExtendedFA12(admin) {
 
     const extendedStorage = {
         standards: storage,
-        admin: admin
+        admin: admin,
+        token_metadata: token_metadata
     }
+
 
     return extendedStorage;
 }
