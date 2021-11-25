@@ -7,12 +7,12 @@ const dummyFA12JsonCode = require('../../contracts/main/gamifications/DummyFA12.
 const scoreFA12JsonCode = require('../../contracts/main/gamifications/ScoreFA12.tz.json')
 const accounts = require('../../scripts/sandbox/accounts')
 
-function getLevelStorage() {
+function getLevelStorage(dexAddr, scoreFA12Addr) {
     const ranks = new MichelsonMap();
 
     const levelStorage = {
-        trading_pair: accounts.alice.pkh, // contract of quipu contract
-        score_token: accounts.alice.pkh,  // contract of score token
+        trading_pair: dexAddr, // contract of quipu contract
+        score_token: scoreFA12Addr,  // contract of score token
         score: 1,
         streak: 0,
         current_rank: 0,
@@ -69,6 +69,10 @@ function getExtendedFA12(admin) {
 
     const token_metadata = new MichelsonMap()
 
+    const token0 = new MichelsonMap()
+
+    token_metadata.set(0, token0)
+
     const storage = {
         tokens: tokens,
         allowances: allowances,
@@ -91,8 +95,11 @@ function getExtendedFA12(admin) {
 describe("BuildLevel()", function () {
     this.timeout(60000)
 
-    let scorer, dex;
+    let scorer, dex
     let wxtz, scoreFA12
+
+    let scorerStorage, dexStorage
+    let wxtzStorage, scoreFA12Storage
 
     beforeEach(async () => {
         console.log("BuildLevel Test")
@@ -111,7 +118,20 @@ describe("BuildLevel()", function () {
             console.log(`WXTZ Origination completed.`);
             wxtz = contract
         }).catch((error) => console.log(`WXTZ Error: ${JSON.stringify(error, null, 2)}`));
+        wxtzStorage = await wxtz.storage()
 
+        // deploy ScoreFA12
+        await tezos.contract.originate({
+            code: scoreFA12JsonCode.text_code,
+            storage: getExtendedFA12(accounts.alice.pkh),
+        }).then((originationOp) => {
+            console.log(`Waiting for confirmation of origination for ScoreFA12: ${originationOp.contractAddress}...`);
+            return originationOp.contract();
+        }).then((contract) => {
+            console.log(`ScoreFA12 Origination completed.`);
+            scoreFA12 = contract
+        }).catch((error) => console.log(`ScoreFA12 Error: ${JSON.stringify(error, null, 2)}`));
+        scoreFA12Storage = await scoreFA12.storage()
 
         // deploy dex
         await tezos.contract.originate({
@@ -124,6 +144,7 @@ describe("BuildLevel()", function () {
             console.log(`Dex Origination completed.`);
             dex = contract
         }).catch((error) => console.log(`Dex Error: ${JSON.stringify(error, null, 2)}`));
+        dexStorage = await dex.storage()
 
 
         // give Dex KT 1300 mutez
@@ -139,16 +160,13 @@ describe("BuildLevel()", function () {
         }).catch((error) => console.log(`Error: ${error} ${JSON.stringify(error, null, 2)}`));
 
         // give Dex KT 1000 wxtz tokens
-        const storage = await wxtz.storage()
-        console.log("admin")
-        console.log(await storage['standards']['tokens'].get(dex.address))
         const op = await wxtz.methods.mint(dex.address, 1000).send()
         await op.confirmation()
-        console.log(await storage['standards']['tokens'].get(dex.address))
 
+        // deploy scorer
         await tezos.contract.originate({
             code: scorerJsonCode.text_code,
-            storage: getLevelStorage()
+            storage: getLevelStorage(dex.address, scoreFA12.address)
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for Scorer: ${originationOp.contractAddress}...`);
             return originationOp.contract();
@@ -156,11 +174,15 @@ describe("BuildLevel()", function () {
             console.log(`Scorer Origination completed.`);
             scorer = contract
         }).catch((error) => console.log(`Scorer Error: ${JSON.stringify(error, null, 2)}`));
-
+        scorerStorage = await scorer.storage()
     });
 
     it("buys tokens and swaps from quipu", async () => {
-        await scorer.methods.buy(4)
+        console.log(dex.address)
+        console.log(dex.methods)
+        console.log(scorerStorage.trading_pair)
+        const op = await scorer.methods.buy(4).send()
+        await op.confirmation()
     })
 
     it.skip("sells tokens and swaps from quipu", async () => {
