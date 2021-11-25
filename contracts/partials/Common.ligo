@@ -68,7 +68,7 @@ function get_user_reward_info (const addr : address; const s : dex_storage) : us
 
 
 (* Helper function to update global rewards info *)
-function update_reward (const s : dex_storage) : dex_storage is
+function update_reward (var s : dex_storage) : dex_storage is
   block {
     (* update loyalty info *)
     const rewards_time : timestamp = if Tezos.now > s.period_finish then
@@ -91,7 +91,7 @@ function update_reward (const s : dex_storage) : dex_storage is
   } with s
 
 (* Helper function to update user rewards info *)
-function update_user_reward (const addr : address; const account: account_info; const new_balance: nat; const s : dex_storage) : dex_storage is
+function update_user_reward (const addr : address; const account: account_info; const new_balance: nat; var s : dex_storage) : dex_storage is
   block {
     var user_reward_info : user_reward_info := get_user_reward_info(addr, s);
 
