@@ -1,5 +1,5 @@
 type tokens     is big_map (address, nat)
-type allowances is big_map (address * address, nat) (* (sender,account) -> value *)
+type allowances is big_map (address * address, nat)
 
 type storage is record [
   tokens      : tokens;
