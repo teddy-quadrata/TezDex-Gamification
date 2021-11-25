@@ -1,9 +1,5 @@
 import { InMemorySigner } from "@taquito/signer";
-import { ContractAbstraction, MichelsonMap, TezosToolkit } from "@taquito/taquito"
-import BigNumber from "bignumber.js";
-import fs from "fs";
-import { DexStorage } from "../helpers/types";
-import TTDex from "../storage/TTDex";
+import { MichelsonMap, TezosToolkit } from "@taquito/taquito"
 
 const scorerJsonCode = require('../../contracts/main/gamifications/Scorer.tz.json')
 const dexJsonCode = require('../../contracts/main/DexFA12.tz.json')
@@ -31,28 +27,28 @@ function getLevelStorage() {
 function getDexStorage(tokenAddr) {
 
     const storage = {
-        tez_pool            : 1300, // make sure tez_pool/token_pool state vars are updated to reflect simulation values
-        token_pool          : 1000,
-        token_address       : tokenAddr, // address of token to be traded
-        baker_validator     : "KT1LcPGQzWWaqBdJKH32fn6RQXVeZPgutDqw",
-        total_supply        : 1300,
-        ledger              :  MichelsonMap.fromLiteral({}),
-        voters              :  MichelsonMap.fromLiteral({}),
-        vetos               :  MichelsonMap.fromLiteral({}),
-        votes               :  MichelsonMap.fromLiteral({}),
-        veto                : 0,
-        last_veto           : "2021-11-21T08:34:42Z",
-        current_delegated   : "tz1PFeoTuFen8jAMRHajBySNyCwLmY5RqF9M",
-        current_candidate   : "tz1VceyYUpq1gk5dtp6jXQRtCtY8hm5DKt72",
-        total_votes         : 0,
-        reward              : 0,
-        total_reward        : 0,
-        reward_paid         : 0,
-        reward_per_share    : 0,
-        reward_per_sec      : 0,
-        last_update_time    : "2021-11-21T08:34:42Z",
-        period_finish       : "2021-11-21T08:34:42Z",
-        user_rewards        :  MichelsonMap.fromLiteral({})
+        tez_pool: 1300, // make sure tez_pool/token_pool state vars are updated to reflect simulation values
+        token_pool: 1000,
+        token_address: tokenAddr, // address of token to be traded
+        baker_validator: "KT1LcPGQzWWaqBdJKH32fn6RQXVeZPgutDqw",
+        total_supply: 1300,
+        ledger: MichelsonMap.fromLiteral({}),
+        voters: MichelsonMap.fromLiteral({}),
+        vetos: MichelsonMap.fromLiteral({}),
+        votes: MichelsonMap.fromLiteral({}),
+        veto: 0,
+        last_veto: "2021-11-21T08:34:42Z",
+        current_delegated: "tz1PFeoTuFen8jAMRHajBySNyCwLmY5RqF9M",
+        current_candidate: "tz1VceyYUpq1gk5dtp6jXQRtCtY8hm5DKt72",
+        total_votes: 0,
+        reward: 0,
+        total_reward: 0,
+        reward_paid: 0,
+        reward_per_share: 0,
+        reward_per_sec: 0,
+        last_update_time: "2021-11-21T08:34:42Z",
+        period_finish: "2021-11-21T08:34:42Z",
+        user_rewards: MichelsonMap.fromLiteral({})
     }
 
     const fullDexStorage = {
@@ -65,20 +61,27 @@ function getDexStorage(tokenAddr) {
     return fullDexStorage
 }
 
-function getFA12Storage() {
+function getExtendedFA12(admin) {
 
     const tokens = new MichelsonMap()
 
     const allowances = new MichelsonMap()
 
     const storage = {
-        tokens      : tokens,
-        allowances  : allowances,
-        total_amount : 0,
+        tokens: tokens,
+        allowances: allowances,
+        total_amount: 0,
     }
 
-    return storage;
+    const extendedStorage = {
+        standards: storage,
+        admin: admin
+    }
+
+    return extendedStorage;
 }
+
+
 
 
 describe("BuildLevel()", function () {
@@ -96,7 +99,7 @@ describe("BuildLevel()", function () {
         // deploy wxtz
         await tezos.contract.originate({
             code: dummyFA12JsonCode.text_code,
-            storage: getFA12Storage(),
+            storage: getExtendedFA12(accounts.alice.pkh),
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for WXTZ: ${originationOp.contractAddress}...`);
             return originationOp.contract();
@@ -105,7 +108,6 @@ describe("BuildLevel()", function () {
             wxtz = contract
         }).catch((error) => console.log(`WXTZ Error: ${JSON.stringify(error, null, 2)}`));
 
-        console.log(wxtz.methods)
 
         // deploy dex
         await tezos.contract.originate({
@@ -116,10 +118,11 @@ describe("BuildLevel()", function () {
             return originationOp.contract();
         }).then((contract) => {
             console.log(`Dex Origination completed.`);
-            dex = contract
+            wxtz = contract
         }).catch((error) => console.log(`Dex Error: ${JSON.stringify(error, null, 2)}`));
 
-        // give Dex KT 1300 tez
+
+        // give Dex KT 1300 mutez
         // give Dex KT 1000 wxtz tokens
 
         await tezos.contract.originate({
