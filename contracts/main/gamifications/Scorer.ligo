@@ -29,7 +29,7 @@ function buy (const purchase_quantity : buy_params; const level : level_storage)
 
   } with (operations, level)
 
-function sell (const purchase_quantity : sell_params; const level : level_storage) : return_level is
+function sell (const sell_quantity : sell_params; const level : level_storage) : return_level is
 
   block {
     // fetch contract for selling
@@ -44,7 +44,7 @@ function sell (const purchase_quantity : sell_params; const level : level_storag
 
     // create transaction operation args
     const params : token_to_tez_payment_params = record [
-      amount = purchase_quantity;
+      amount = sell_quantity;
       min_out = 1n;
       receiver = level.owner;
     ];
