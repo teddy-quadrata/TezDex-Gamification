@@ -51,10 +51,15 @@ function getDexStorage(tokenAddr) {
         user_rewards: MichelsonMap.fromLiteral({})
     }
 
+    const func_labmda = [{min_out: 1, reciever: accounts.alice.pkh}, storage, accounts.alice.pkh];
+
+    const dex_lambdas = new MichelsonMap()
+
+
     const fullDexStorage = {
         storage: storage,
         metadata: MichelsonMap.fromLiteral({}),
-        dex_lambdas: MichelsonMap.fromLiteral({}),
+        dex_lambdas: dex_lambdas,
         token_lambdas: MichelsonMap.fromLiteral({}),
     }
 
@@ -178,9 +183,8 @@ describe("BuildLevel()", function () {
     });
 
     it("buys tokens and swaps from quipu", async () => {
-        console.log(dex.address)
-        console.log(dex.methods)
-        console.log(scorerStorage.trading_pair)
+        const swap = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send()
+        await swap.confirmation()
         const op = await scorer.methods.buy(4).send()
         await op.confirmation()
     })
