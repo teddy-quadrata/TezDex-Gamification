@@ -118,16 +118,16 @@ describe("BuildLevel()", function () {
             return originationOp.contract();
         }).then((contract) => {
             console.log(`Dex Origination completed.`);
-            wxtz = contract
+            dex = contract
         }).catch((error) => console.log(`Dex Error: ${JSON.stringify(error, null, 2)}`));
 
 
         // give Dex KT 1300 mutez
         const amount = 1300;
-        console.log(`Transfering ${amount} ꜩ to ${dex.address}...`);
-        tezos.contract.transfer({
-            to: dex.address, amount: amount
-        }).then((op) => {
+        console.log(`Transfering ${amount} mutez to ${dex.address}...`);
+        await tezos.contract.transfer({
+            to: accounts.bob.pkh, amount: amount
+        }).then(async (op) => {
             console.log(`Waiting for ${op.hash} to be confirmed...`);
             return op.confirmation(1).then(() => op.hash);
         }).then((hash) => {
@@ -135,6 +135,9 @@ describe("BuildLevel()", function () {
         }).catch((error) => console.log(`Error: ${error} ${JSON.stringify(error, null, 2)}`));
 
         // give Dex KT 1000 wxtz tokens
+        console.log(await wxtz.storage())
+        await wxtz.methods.mint(dex.address, 1000)
+        console.log(await wxtz.storage())
 
         await tezos.contract.originate({
             code: scorerJsonCode.text_code,
