@@ -1,3 +1,4 @@
+
 function transfer (const p : transfer; const s: storage) : list (operation) * storage is block {
    var new_allowances : allowances := Big_map.empty;
 	if Tezos.sender = p.address_from
@@ -62,3 +63,12 @@ function getTotalSupply (const p : getTotalSupply; const s : storage) : list (op
   var total : nat := s.total_amount;
   var op : operation := Tezos.transaction (total, 0mutez, p.callback);
 } with (list [op],s)
+
+function fa12Dispatcher (const a : action; const s : storage) : list (operation) * storage is
+	case a of
+    	Transfer		(p) -> transfer (p,s)
+	|	Approve        	(p) -> approve (p,s)
+	|	GetAllowance   	(p) -> getAllowance (p,s)
+	|   GetBalance     	(p) -> getBalance (p,s)
+	|	GetTotalSupply 	(p) -> getTotalSupply (p,s)
+	end;

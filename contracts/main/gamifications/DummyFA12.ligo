@@ -1,12 +1,10 @@
-#include "../../partials/gamifications/IFA12.ligo"
-#include "../../partials/gamifications/FA12Methods.ligo"
 
+#include "../../partials/gamifications/IExtendedToken.ligo"
+#include "../../partials/gamifications/ExtendedTokenMethods.ligo"
 
-function main (const a : action; const s : storage) : list (operation) * storage is
+function main (const a : extendedAction; const s : storage) : list (operation) * storage is
  	case a of
-   	    Transfer       (p) -> transfer (p,s)
-	|	Approve        (p) -> approve (p,s)
-	|	GetAllowance   (p) -> getAllowance (p,s)
-	|   GetBalance     (p) -> getBalance (p,s)
-	|	GetTotalSupply (p) -> getTotalSupply (p,s)
+   	    Methods 		(p) -> fa12Dispatcher(p, s)
+	|	Mint 			(p) -> mint (p,s)
+	|	Burn 			(p) -> burn (p,s)
 	end;
