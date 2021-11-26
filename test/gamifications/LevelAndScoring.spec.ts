@@ -115,8 +115,6 @@ describe("BuildLevel()", function () {
         const tezos = new TezosToolkit('http://localhost:8732');
         tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
 
-        console.log(tez_to_tokens)
-
         // deploy wxtz
         await tezos.contract.originate({
             code: dummyFA12JsonCode.text_code,
@@ -188,9 +186,13 @@ describe("BuildLevel()", function () {
     });
 
     it("buys tokens and swaps from quipu", async () => {
-        const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send()
+        console.log(wxtz.address)
+        console.log(dexStorage.storage.token_address)
+        console.log(wxtz.methods)
+        const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send({amount: 100, mutez: true})
         await swap1.confirmation()
-        const swap2 = await dex.methods.tokenToTezPayment(6, 1, accounts.alice.pkh).send()
+
+        const swap2 = await dex.methods.tokenToTezPayment(1, 1, accounts.alice.pkh).send()
         await swap2.confirmation()
 
         const op = await scorer.methods.buy(4).send()
