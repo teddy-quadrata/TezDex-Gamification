@@ -188,7 +188,7 @@ describe("BuildLevel()", function () {
     it("buys tokens and swaps from quipu", async () => {
         console.log(wxtz.address)
         console.log(dexStorage.storage.token_address)
-        console.log(wxtz.methods)
+        console.log(wxtz.parameterSchema.ExtractSignatures())
         const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send({amount: 100, mutez: true})
         await swap1.confirmation()
 
