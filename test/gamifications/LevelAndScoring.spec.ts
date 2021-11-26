@@ -187,11 +187,6 @@ describe("BuildLevel()", function () {
     });
 
     it("succeeds at calling %tez_to_tokens and %tokens_to_tez", async () => {
-        console.log(wxtz.address)
-        console.log(dexStorage.storage.tez_pool)
-        console.log(dexStorage.storage.token_pool)
-        //console.log(wxtz.parameterSchema.ExtractSignatures())
-
         const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send({amount: 100, mutez: true})
         await swap1.confirmation()
 
@@ -209,11 +204,20 @@ describe("BuildLevel()", function () {
     })
 
     it("sells tokens and swaps from quipu", async () => {
+        wxtzStorage = await wxtz.storage()
+        console.log(await wxtzStorage.standards.allowances.get({0: accounts.alice.pkh, 1: scorer.address}))
+
         const approveLevel = await wxtz.methods.approve(scorer.address, 4).send()
         await approveLevel.confirmation()
 
+        wxtzStorage = await wxtz.storage()
+        console.log(await wxtzStorage.standards.allowances.get({0: accounts.alice.pkh, 1: scorer.address}))
+
         const levelApproveDex = await scorer.methods.approval(4).send()
         await levelApproveDex.confirmation()
+
+        wxtzStorage = await wxtz.storage()
+        console.log(await wxtzStorage.standards.allowances.get({0: accounts.alice.pkh, 1: scorer.address}))
 
         const sell = await scorer.methods.sell(4).send()
         await sell.confirmation()
