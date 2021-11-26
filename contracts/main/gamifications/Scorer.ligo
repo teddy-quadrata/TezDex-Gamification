@@ -72,5 +72,5 @@ function main (const action : game_action; const level : level_storage): return_
   case action of
     Buy (x) -> buy (x, level)
   | Sell (x) -> sell (x, level)
-  | Approval (x) -> approve(x, level)
+  | PrepareBuy (x) -> approve(x, level)
   end

@@ -1,5 +1,5 @@
 import { InMemorySigner } from "@taquito/signer";
-import { MichelsonMap, TezosToolkit } from "@taquito/taquito"
+import { MichelCodecPacker, MichelsonMap, TezosToolkit } from "@taquito/taquito"
 import BigNumber from "bignumber.js";
 
 const scorerJsonCode = require('../../contracts/main/gamifications/Scorer.tz.json')
@@ -115,6 +115,7 @@ describe("BuildLevel()", function () {
         console.log("BuildLevel Test")
         const tezos = new TezosToolkit('http://localhost:8732');
         tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
+        tezos.setPackerProvider(new MichelCodecPacker());
 
         // deploy wxtz
         await tezos.contract.originate({
@@ -175,7 +176,7 @@ describe("BuildLevel()", function () {
         // deploy scorer
         await tezos.contract.originate({
             code: scorerJsonCode.text_code,
-            storage: getLevelStorage(dex.address, scoreFA12.address)
+            storage: getLevelStorage(dex.address, wxtz.address)
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for Scorer: ${originationOp.contractAddress}...`);
             return originationOp.contract();
@@ -186,7 +187,7 @@ describe("BuildLevel()", function () {
         scorerStorage = await scorer.storage()
     });
 
-    it("succeeds at calling %tez_to_tokens and %tokens_to_tez", async () => {
+    it("succeeds at calling tez_to_tokens and tokens_to_tez", async () => {
         const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send({amount: 100, mutez: true})
         await swap1.confirmation()
 
@@ -204,20 +205,23 @@ describe("BuildLevel()", function () {
     })
 
     it("sells tokens and swaps from quipu", async () => {
-        wxtzStorage = await wxtz.storage()
-        console.log(await wxtzStorage.standards.allowances.get({0: accounts.alice.pkh, 1: scorer.address}))
+
 
         const approveLevel = await wxtz.methods.approve(scorer.address, 4).send()
         await approveLevel.confirmation()
 
-        wxtzStorage = await wxtz.storage()
-        console.log(await wxtzStorage.standards.allowances.get({0: accounts.alice.pkh, 1: scorer.address}))
 
-        const levelApproveDex = await scorer.methods.approval(4).send()
+        const levelApproveDex = await scorer.methods.prepareBuy(4).send()
         await levelApproveDex.confirmation()
 
-        wxtzStorage = await wxtz.storage()
-        console.log(await wxtzStorage.standards.allowances.get({0: accounts.alice.pkh, 1: scorer.address}))
+        console.log((await (await wxtz.storage()).standards.allowances.get({1: accounts.alice.pkh, 0: scorer.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({1: accounts.alice.pkh, 0: dex.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({1: scorer.address, 0: dex.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({1: dex.address, 0: scorer.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({0: accounts.alice.pkh,1: scorer.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({0: accounts.alice.pkh,1: dex.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({0: scorer.address, 1: dex.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({0: dex.address, 1: scorer.address})))
 
         const sell = await scorer.methods.sell(4).send()
         await sell.confirmation()

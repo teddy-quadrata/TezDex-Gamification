@@ -8,7 +8,7 @@ type sell_params is nat
 type game_action is
 | Buy of buy_params
 | Sell of sell_params
-| Approval of nat
+| PrepareBuy of nat
 
 (* main storage, also acts as score treasury *)
 type level_storage is record [
