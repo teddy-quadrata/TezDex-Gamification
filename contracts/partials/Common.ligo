@@ -1,3 +1,5 @@
+#include "./IFactory.ligo"
+
 (* Helper function to get account *)
 function get_account (const addr : address; const s : dex_storage) : account_info is
   case s.ledger[addr] of

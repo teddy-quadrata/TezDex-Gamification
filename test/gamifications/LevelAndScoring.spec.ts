@@ -7,6 +7,9 @@ const dummyFA12JsonCode = require('../../contracts/main/gamifications/DummyFA12.
 const scoreFA12JsonCode = require('../../contracts/main/gamifications/ScoreFA12.tz.json')
 const accounts = require('../../scripts/sandbox/accounts')
 
+const token_to_tez = require('../../contracts/partials/gamifications/lambda1.tz.json')
+const tez_to_tokens = require('../../contracts/partials/gamifications/lambda2.tz.json')
+
 function getLevelStorage(dexAddr, scoreFA12Addr) {
     const ranks = new MichelsonMap();
 
@@ -51,9 +54,10 @@ function getDexStorage(tokenAddr) {
         user_rewards: MichelsonMap.fromLiteral({})
     }
 
-    const func_labmda = [{min_out: 1, reciever: accounts.alice.pkh}, storage, accounts.alice.pkh];
 
     const dex_lambdas = new MichelsonMap()
+    dex_lambdas.set(0, tez_to_tokens)
+    dex_lambdas.set(1, token_to_tez)
 
 
     const fullDexStorage = {
@@ -111,6 +115,7 @@ describe("BuildLevel()", function () {
         const tezos = new TezosToolkit('http://localhost:8732');
         tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
 
+        console.log(tez_to_tokens)
 
         // deploy wxtz
         await tezos.contract.originate({

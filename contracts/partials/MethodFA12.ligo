@@ -17,7 +17,7 @@ function transfer (const p : token_action; var s : dex_storage; const this : add
       if params.0 = params.1.0 then
         failwith("Dex/selt-transfer")
       else skip;
-      var sender_account : account_info = get_account(params.0, s);
+      var sender_account : account_info := get_account(params.0, s);
       if sender_account.balance < value then
         failwith("Dex/not-enough-balance")
       else skip;
@@ -49,7 +49,7 @@ function transfer (const p : token_action; var s : dex_storage; const this : add
   } with (operations, s)
 
 (* Approve an nat to be spent by another address in the name of the sender *)
-function approve (const p : token_action; const s : dex_storage; const this : address) : return is
+function approve (const p : token_action; var s : dex_storage; const this : address) : return is
   block {
     case p of
     | ITransfer(params) -> skip
