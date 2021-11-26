@@ -56,8 +56,8 @@ function getDexStorage(tokenAddr) {
 
 
     const dex_lambdas = new MichelsonMap()
-    dex_lambdas.set(0, tez_to_tokens)
-    dex_lambdas.set(1, token_to_tez)
+    dex_lambdas.set(1, tez_to_tokens)
+    dex_lambdas.set(2, token_to_tez)
 
 
     const fullDexStorage = {
@@ -188,8 +188,11 @@ describe("BuildLevel()", function () {
     });
 
     it("buys tokens and swaps from quipu", async () => {
-        const swap = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send()
-        await swap.confirmation()
+        const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send()
+        await swap1.confirmation()
+        const swap2 = await dex.methods.tokenToTezPayment(6, 1, accounts.alice.pkh).send()
+        await swap2.confirmation()
+
         const op = await scorer.methods.buy(4).send()
         await op.confirmation()
     })
