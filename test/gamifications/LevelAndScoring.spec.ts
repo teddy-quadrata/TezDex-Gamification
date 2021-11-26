@@ -188,8 +188,9 @@ describe("BuildLevel()", function () {
 
     it("succeeds at calling %tez_to_tokens and %tokens_to_tez", async () => {
         console.log(wxtz.address)
-        console.log(dexStorage.storage.token_address)
-        console.log(wxtz.parameterSchema.ExtractSignatures())
+        console.log(dexStorage.storage.tez_pool)
+        console.log(dexStorage.storage.token_pool)
+        //console.log(wxtz.parameterSchema.ExtractSignatures())
 
         const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send({amount: 100, mutez: true})
         await swap1.confirmation()
@@ -203,11 +204,13 @@ describe("BuildLevel()", function () {
     })
 
     it("buys tokens and swaps from quipu", async () => {
-        const op = await scorer.methods.buy(4).send()
+        const op = await scorer.methods.buy(4).send({amount: 4, mutez: true})
         await op.confirmation()
     })
 
     it("sells tokens and swaps from quipu", async () => {
+        const approveLevel = await wxtz.methods.approve(scorer.address, 4).send()
+        await approveLevel.confirmation()
         const sell = await scorer.methods.sell(4).send()
         await sell.confirmation()
     })
