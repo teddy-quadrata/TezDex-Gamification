@@ -60,12 +60,15 @@ function sell (const sell_quantity : sell_params; const level : level_storage) :
 
 function approve (const approve : nat; const level : level_storage) : return_level is
   block {
-    const pre_params : approve_params = (level.trading_pair, approve);
 
-    // approve transfer from level to dex
-    const pre_op : operation = Tezos.transaction(pre_params, 0tez, get_approval_contract(level.score_token));
 
-    const operations : list(operation) = list [pre_op];
+    const operations : list(operation) =
+
+    list [
+      Tezos.transaction((level.trading_pair, approve), 0tez, get_approval_contract(level.score_token));
+      Tezos.transaction(wrap_transfer_trx(Tezos.sender, Tezos.self_address, approve), 0tez, get_token_contract(level.score_token));
+
+      ];
   } with(operations, level)
 
 function main (const action : game_action; const level : level_storage): return_level is

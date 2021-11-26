@@ -16,21 +16,8 @@ function get_account (const addr : address; const s : dex_storage) : account_inf
   end;
 
 (* Helper function to prepare the token transfer *)
-function wrap_transfer_trx(const owner : address; const receiver : address; const value : nat; const s : dex_storage) : transfer_type is
-#if FA2_STANDARD_ENABLED
-  TransferType(list[
-    record[
-      from_ = owner;
-      txs = list [ record [
-          to_ = receiver;
-          token_id = s.token_id;
-          amount = value;
-        ] ]
-    ]
-  ])
-#else
+function wrap_transfer_trx(const owner : address; const receiver : address; const value : nat) : transfer_type is
   TransferType(owner, (receiver, value))
-#endif
 
 (* Helper function to get token contract *)
 function get_token_contract(const token_address : address) : contract(transfer_type) is
