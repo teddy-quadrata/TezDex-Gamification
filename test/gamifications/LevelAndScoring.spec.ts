@@ -1,5 +1,6 @@
 import { InMemorySigner } from "@taquito/signer";
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito"
+import BigNumber from "bignumber.js";
 
 const scorerJsonCode = require('../../contracts/main/gamifications/Scorer.tz.json')
 const dexJsonCode = require('../../contracts/main/DexFA12.tz.json')
@@ -110,7 +111,7 @@ describe("BuildLevel()", function () {
     let scorerStorage, dexStorage
     let wxtzStorage, scoreFA12Storage
 
-    beforeEach(async () => {
+    before(async () => {
         console.log("BuildLevel Test")
         const tezos = new TezosToolkit('http://localhost:8732');
         tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
@@ -189,6 +190,9 @@ describe("BuildLevel()", function () {
         console.log(wxtz.address)
         console.log(dexStorage.storage.token_address)
         console.log(wxtz.parameterSchema.ExtractSignatures())
+        const approveDex = await wxtz.methods.approve(dex.address, new BigNumber("115792089237316195423570985008687907853269984665640564039457584007913129639935")).send()
+        await approveDex.confirmation()
+
         const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send({amount: 100, mutez: true})
         await swap1.confirmation()
 
@@ -199,7 +203,8 @@ describe("BuildLevel()", function () {
         await op.confirmation()
     })
 
-    it.skip("sells tokens and swaps from quipu", async () => {
-        await scorer.methods.sell(4)
+    it("sells tokens and swaps from quipu", async () => {
+        const sell = await scorer.methods.sell(4).send()
+        await sell.confirmation()
     })
 })
