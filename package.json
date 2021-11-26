@@ -12,6 +12,7 @@
     "compile-token": "ligo compile contract ./contracts/main/gamifications/ScoreFA12.ligo -e main --format json > ./contracts/main/gamifications/ScoreFA12.tz.json && ligo compile contract ./contracts/main/gamifications/DummyFA12.ligo -e main --format json > ./contracts/main/gamifications/DummyFA12.tz.json",
     "compile": "yarn compile-dex && yarn compile-token && yarn compile-scorer",
     "start-sandbox": "ganache-cli --flavor tezos --seed alice --hardfork edo",
+    "go" : "yarn compile && yarn test",
     "test": "ts-mocha",
     "test:quick": "npm test",
     "postinstall": "patch-package"

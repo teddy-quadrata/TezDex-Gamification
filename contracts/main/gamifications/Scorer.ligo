@@ -8,7 +8,7 @@ function buy (const purchase_quantity : buy_params; const level : level_storage)
 
     // fetch contract for buying
     const trading : contract(tez_to_token_payment_params) =
-    case (Tezos.get_entrypoint_opt("%tez_to_tokens", level.trading_pair) : option (contract(tez_to_token_payment_params))) of
+    case (Tezos.get_entrypoint_opt("%tezToTokenPayment", level.trading_pair) : option (contract(tez_to_token_payment_params))) of
     Some (contract) -> contract
     |None -> (failwith("Level not found") : contract(tez_to_token_payment_params))
     end;
@@ -34,7 +34,7 @@ function sell (const sell_quantity : sell_params; const level : level_storage) :
   block {
     // fetch contract for selling
     const trading : contract(token_to_tez_payment_params) =
-    case (Tezos.get_entrypoint_opt("%token_to_tez", level.trading_pair) : option (contract(token_to_tez_payment_params))) of
+    case (Tezos.get_entrypoint_opt("%tokenToTezPayment", level.trading_pair) : option (contract(token_to_tez_payment_params))) of
     Some (contract) -> contract
     |None -> (failwith("Level not found") : contract(token_to_tez_payment_params))
     end;
