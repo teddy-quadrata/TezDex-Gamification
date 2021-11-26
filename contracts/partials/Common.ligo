@@ -36,7 +36,13 @@ function wrap_transfer_trx(const owner : address; const receiver : address; cons
 function get_token_contract(const token_address : address) : contract(transfer_type) is
   case (Tezos.get_entrypoint_opt("%transfer", token_address) : option(contract(transfer_type))) of
     Some(contr) -> contr
-    | None -> (failwith("Dex/not-token") : contract(transfer_type))
+    | None -> (failwith("Dex/non-transferable") : contract(transfer_type))
+  end;
+
+function get_approval_contract(const token_address : address) : contract(approve_params) is
+  case (Tezos.get_entrypoint_opt("%approve", token_address) : option(contract(approve_params))) of
+    Some(contr) -> contr
+    | None -> (failwith("Dex/non-approvable") : contract(approve_params))
   end;
 
 (* Helper function to get token contract *)

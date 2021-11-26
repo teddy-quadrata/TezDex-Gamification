@@ -31,15 +31,15 @@ function transfer (const p : transfer; const s: storage) : list (operation) * st
 } with ((nil: list (operation)), s with record [tokens = new_tokens; allowances = new_allowances])
 
 function approve (const p : approve; const s : storage) : list (operation) * storage is block {
-	var previous_value : nat := case Big_map.find_opt ((p.spender, Tezos.sender), s.allowances) of
+	var previous_value : nat := case Big_map.find_opt ((p.0, Tezos.sender), s.allowances) of
 		Some (value) -> value
 	|	None -> 0n
 	end;
 	var new_allowances : allowances := Big_map.empty;
-	if previous_value > 0n and p.value > 0n
+	if previous_value > 0n and p.1 > 0n
 	then { failwith ("Unsafe Allowance Change")}
 	else {
-		new_allowances := Big_map.update ((p.spender, Tezos.sender), (Some (p.value)), s.allowances);
+		new_allowances := Big_map.update ((p.0, Tezos.sender), (Some (p.1)), s.allowances);
 	}
 } with ((nil: list (operation)), s with record [allowances = new_allowances])
 

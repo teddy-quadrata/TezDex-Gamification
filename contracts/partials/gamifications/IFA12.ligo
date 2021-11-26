@@ -9,10 +9,7 @@ type storage is record [
 
 type transfer is michelson_pair(address, "from", michelson_pair(address, "to", nat, "value"), "")
 
-type approve is record [
-	spender : address;
-	value   : nat;
-]
+type approve is michelson_pair(address, "spender", nat, "value")
 
 type getAllowance is record [
 	owner    : address;

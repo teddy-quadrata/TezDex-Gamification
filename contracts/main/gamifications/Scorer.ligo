@@ -1,5 +1,6 @@
 #include "../../partials/gamifications/IScorer.ligo"
 #include "../../partials/IDex.ligo"
+#include "../../partials/Common.ligo"
 
 
 function buy (const purchase_quantity : buy_params; const level : level_storage) : return_level is
@@ -32,15 +33,16 @@ function buy (const purchase_quantity : buy_params; const level : level_storage)
 function sell (const sell_quantity : sell_params; const level : level_storage) : return_level is
 
   block {
+
+    // calculate score and update level_storage accordingly
+    // mint score on this address
+
     // fetch contract for selling
     const trading : contract(token_to_tez_payment_params) =
     case (Tezos.get_entrypoint_opt("%tokenToTezPayment", level.trading_pair) : option (contract(token_to_tez_payment_params))) of
     Some (contract) -> contract
     |None -> (failwith("Level not found") : contract(token_to_tez_payment_params))
     end;
-
-    // calculate score and update level_storage accordingly
-    // mint score on this address
 
     // create transaction operation args
     const params : token_to_tez_payment_params = record [
@@ -55,8 +57,20 @@ function sell (const sell_quantity : sell_params; const level : level_storage) :
 
   } with (operations, level)
 
+
+function approve (const approve : nat; const level : level_storage) : return_level is
+  block {
+    const pre_params : approve_params = (level.trading_pair, approve);
+
+    // approve transfer from level to dex
+    const pre_op : operation = Tezos.transaction(pre_params, 0tez, get_approval_contract(level.score_token));
+
+    const operations : list(operation) = list [pre_op];
+  } with(operations, level)
+
 function main (const action : game_action; const level : level_storage): return_level is
   case action of
     Buy (x) -> buy (x, level)
   | Sell (x) -> sell (x, level)
+  | Approval (x) -> approve(x, level)
   end

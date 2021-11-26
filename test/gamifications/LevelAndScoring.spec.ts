@@ -211,6 +211,10 @@ describe("BuildLevel()", function () {
     it("sells tokens and swaps from quipu", async () => {
         const approveLevel = await wxtz.methods.approve(scorer.address, 4).send()
         await approveLevel.confirmation()
+
+        const levelApproveDex = await scorer.methods.approval(4).send()
+        await levelApproveDex.confirmation()
+
         const sell = await scorer.methods.sell(4).send()
         await sell.confirmation()
     })
