@@ -7,11 +7,7 @@ type storage is record [
   total_amount : nat;
 ]
 
-type transfer is record [
-	address_from : address;
-	address_to   : address;
-	value        : nat;
-]
+type transfer is michelson_pair(address, "from", michelson_pair(address, "to", nat, "value"), "")
 
 type approve is record [
 	spender : address;

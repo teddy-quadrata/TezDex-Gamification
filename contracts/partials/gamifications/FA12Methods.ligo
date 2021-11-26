@@ -1,32 +1,32 @@
 
 function transfer (const p : transfer; const s: storage) : list (operation) * storage is block {
    var new_allowances : allowances := Big_map.empty;
-	if Tezos.sender = p.address_from
+	if Tezos.sender = p.0
 	then { new_allowances := s.allowances; }
 	else {
 		var authorized_value : nat :=
-		case (Big_map.find_opt ((Tezos.sender,p.address_from), s.allowances)) of
+		case (Big_map.find_opt ((Tezos.sender,p.0), s.allowances)) of
 				Some (value) -> value
 			|	None       -> 0n
 		end;
-		if (authorized_value < p.value)
+		if (authorized_value < p.1.1)
 		then { failwith("Not Enough Allowance")}
-		else { new_allowances := Big_map.update ((Tezos.sender,p.address_from), (Some (abs(authorized_value - p.value))), s.allowances) }
+		else { new_allowances := Big_map.update ((Tezos.sender,p.0), (Some (abs(authorized_value - p.1.1))), s.allowances) }
 	};
-	var sender_balance : nat := case (Big_map.find_opt (p.address_from, s.tokens)) of
+	var sender_balance : nat := case (Big_map.find_opt (p.0, s.tokens)) of
 		Some (value) -> value
 	|	None        -> 0n
 	end;
 	var new_tokens : tokens := Big_map.empty;
-	if (sender_balance < p.value)
+	if (sender_balance < p.1.1)
 	then { failwith ("Not Enough Balance")}
 	else {
-		new_tokens := Big_map.update (p.address_from, (Some (abs(sender_balance - p.value))), s.tokens);
-		var receiver_balance : nat := case (Big_map.find_opt (p.address_to, s.tokens)) of
+		new_tokens := Big_map.update (p.0, (Some (abs(sender_balance - p.1.1))), s.tokens);
+		var receiver_balance : nat := case (Big_map.find_opt (p.1.0, s.tokens)) of
 			Some (value) -> value
 		|	None        -> 0n
 		end;
-		new_tokens := Big_map.update (p.address_to, (Some (receiver_balance + p.value)), new_tokens);
+		new_tokens := Big_map.update (p.1.0, (Some (receiver_balance + p.1.1)), new_tokens);
 	}
 } with ((nil: list (operation)), s with record [tokens = new_tokens; allowances = new_allowances])
 
