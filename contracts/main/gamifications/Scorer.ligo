@@ -90,5 +90,6 @@ function main (const action : game_action; const level : level_storage): return_
       Buy (x) -> buy (x, level)
     | PreSell (x) -> preSell(x, level)
     | Sell (x) -> sell (x, level)
+    | PostSell -> postSell(level)
     | Default -> postSell(level)
   end;
