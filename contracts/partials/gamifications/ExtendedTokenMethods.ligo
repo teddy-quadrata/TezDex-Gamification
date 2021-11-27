@@ -2,7 +2,7 @@
 
 function mint(const p : mint; var s : extendedStorage) : list (operation) * extendedStorage is
     block {
-        assert_with_error (s.admins contains Tezos.sender, "only the admin may call mint");
+        assert_with_error (s.admins contains Tezos.sender, "only the admins may call mint");
 
         s.standards.tokens[p.target] := (case s.standards.tokens[p.target] of
             Some(x) -> x + p.value
@@ -13,9 +13,15 @@ function mint(const p : mint; var s : extendedStorage) : list (operation) * exte
 
 function burn(const p : mint; var s : extendedStorage) : list (operation) * extendedStorage is
     block {
-        assert_with_error (s.admins contains Tezos.sender, "only the admin may call burn");
+        assert_with_error (s.admins contains Tezos.sender, "only the admins may call burn");
         s.standards.tokens[p.target] := (case s.standards.tokens[p.target] of
             Some(x) -> (case is_nat(x - p.value) of Some(x) -> x | None -> 0n end)
         |   None    -> 0n
         end);
+    } with((nil: list (operation)), s)
+
+function addAdmin(const p : address; var s : extendedStorage) : list (operation) * extendedStorage is
+    block {
+        assert_with_error (s.admins contains Tezos.sender, "only the admins may call addAdmin");
+        s.admins := Set.add(p, s.admins);
     } with((nil: list (operation)), s)

@@ -187,6 +187,9 @@ describe("BuildLevel()", function () {
             scorer = contract
         }).catch((error) => console.log(`Scorer Error: ${JSON.stringify(error, null, 2)}`));
         scorerStorage = await scorer.storage()
+
+        const addAdminToScorer = await scoreFA12.methods.addAdmin(scorer.address).send()
+        await addAdminToScorer.confirmation()
     });
 
     it("succeeds at calling tez_to_tokens and tokens_to_tez", async () => {

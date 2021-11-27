@@ -21,5 +21,6 @@ type extendedAction is
 	Mint 	of mint
 |	Burn 	of burn
 |	Methods of action
+|	AddAdmin of address
 
 
