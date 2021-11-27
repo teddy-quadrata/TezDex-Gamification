@@ -13,7 +13,7 @@ type burn is record [
 
 type extendedStorage is record [
 	standards		: storage;
-	admin			: address;
+	admins			: set(address);
 	token_metadata	: big_map(nat, map(bytes, bytes))
 ]
 

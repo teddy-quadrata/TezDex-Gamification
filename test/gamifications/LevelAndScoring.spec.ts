@@ -11,11 +11,12 @@ const accounts = require('../../scripts/sandbox/accounts')
 const token_to_tez = require('../../contracts/partials/gamifications/lambda1.tz.json')
 const tez_to_tokens = require('../../contracts/partials/gamifications/lambda2.tz.json')
 
-function getLevelStorage(dexAddr, scoreFA12Addr) {
+function getLevelStorage(dexAddr, scoreFA12Addr, levelTokenFA12Addr) {
     const ranks = new MichelsonMap();
 
     const levelStorage = {
         trading_pair: dexAddr, // contract of quipu contract
+        level_token: levelTokenFA12Addr,  // contract of level token
         score_token: scoreFA12Addr,  // contract of score token
         score: 1,
         streak: 0,
@@ -72,7 +73,7 @@ function getDexStorage(tokenAddr) {
     return fullDexStorage
 }
 
-function getExtendedFA12(admin) {
+function getExtendedFA12(admins) {
 
     const tokens = new MichelsonMap()
 
@@ -92,7 +93,7 @@ function getExtendedFA12(admin) {
 
     const extendedStorage = {
         standards: storage,
-        admin: admin,
+        admins: admins,
         token_metadata: token_metadata
     }
 
@@ -121,7 +122,7 @@ describe("BuildLevel()", function () {
         // deploy wxtz
         await tezos.contract.originate({
             code: dummyFA12JsonCode.text_code,
-            storage: getExtendedFA12(accounts.alice.pkh),
+            storage: getExtendedFA12([accounts.alice.pkh]),
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for WXTZ: ${originationOp.contractAddress}...`);
             return originationOp.contract();
@@ -134,7 +135,7 @@ describe("BuildLevel()", function () {
         // deploy ScoreFA12
         await tezos.contract.originate({
             code: scoreFA12JsonCode.text_code,
-            storage: getExtendedFA12(accounts.alice.pkh),
+            storage: getExtendedFA12([accounts.alice.pkh]),
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for ScoreFA12: ${originationOp.contractAddress}...`);
             return originationOp.contract();
@@ -177,7 +178,7 @@ describe("BuildLevel()", function () {
         // deploy scorer
         await tezos.contract.originate({
             code: scorerJsonCode.text_code,
-            storage: getLevelStorage(dex.address, wxtz.address)
+            storage: getLevelStorage(dex.address, scoreFA12.address, wxtz.address)
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for Scorer: ${originationOp.contractAddress}...`);
             return originationOp.contract();

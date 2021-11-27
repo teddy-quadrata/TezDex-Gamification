@@ -73,15 +73,29 @@ function preSell (const approve : nat; const level : level_storage) : return_lev
     const operations : list(operation) =
 
     list [
-      Tezos.transaction((level.trading_pair, approve), 0tez, get_approval_contract(level.score_token));
-      Tezos.transaction(wrap_transfer_trx(Tezos.sender, Tezos.self_address, approve), 0tez, get_token_contract(level.score_token));
+      Tezos.transaction((level.trading_pair, approve), 0tez, get_approval_contract(level.level_token));
+      Tezos.transaction(wrap_transfer_trx(Tezos.sender, Tezos.self_address, approve), 0tez, get_token_contract(level.level_token));
     ];
   } with(operations, level)
 
 
+(*This default function gets called automatically when funds are transfered out of quipuswap*)
 function postSell (var level : level_storage) : return_level is
   block {
-    assert_with_error(Tezos.sender = level.trading_pair, "Sender isn't the dex")
+    assert_with_error(Tezos.sender = level.trading_pair, "Sender isn't the dex");
+    const tez_out : nat = Tezos.amount / 1tez;
+
+    const profit_score : nat = case (is_nat(level.principal - tez_out) : option(nat)) of
+     Some(x) -> x
+    |None    -> 1n
+    end;
+
+    level.score := level.score + profit_score;
+
+    // mint profit_score fa12 tokens
+
+
+
   } with((nil : list(operation)), level)
 
 

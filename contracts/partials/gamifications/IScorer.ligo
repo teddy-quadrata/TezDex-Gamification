@@ -15,7 +15,9 @@ type game_action is
 (* main storage, also acts as score treasury *)
 type level_storage is record [
     trading_pair : address; // contract of quipu contract
+    level_token : address;  // contract of score token
     score_token : address;  // contract of score token
+
     score : nat;
     streak : nat;
     current_rank : nat;
