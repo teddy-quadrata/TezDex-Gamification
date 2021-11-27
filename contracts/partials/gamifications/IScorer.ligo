@@ -20,6 +20,7 @@ type level_storage is record [
     possible_ranks : ranks;
     multiplier : nat;
     owner : address;
+    principal: nat;
 ]
 
 type return_level is list (operation) * level_storage

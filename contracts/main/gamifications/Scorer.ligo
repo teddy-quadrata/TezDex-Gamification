@@ -3,7 +3,7 @@
 #include "../../partials/Common.ligo"
 
 
-function buy (const purchase_quantity : buy_params; const level : level_storage) : return_level is
+function buy (const purchase_quantity : buy_params; var level : level_storage) : return_level is
 
   block {
 
@@ -15,6 +15,9 @@ function buy (const purchase_quantity : buy_params; const level : level_storage)
     end;
 
     // calculate score and update level_storage accordingly
+    level.score := level.score + purchase_quantity;
+    level.principal := level.principal + purchase_quantity;
+
     // mint score on this address
 
     // create transaction operation args
@@ -58,7 +61,7 @@ function sell (const sell_quantity : sell_params; const level : level_storage) :
   } with (operations, level)
 
 
-function approve (const approve : nat; const level : level_storage) : return_level is
+function prepbuy (const approve : nat; const level : level_storage) : return_level is
   block {
 
 
@@ -67,13 +70,12 @@ function approve (const approve : nat; const level : level_storage) : return_lev
     list [
       Tezos.transaction((level.trading_pair, approve), 0tez, get_approval_contract(level.score_token));
       Tezos.transaction(wrap_transfer_trx(Tezos.sender, Tezos.self_address, approve), 0tez, get_token_contract(level.score_token));
-
-      ];
+    ];
   } with(operations, level)
 
 function main (const action : game_action; const level : level_storage): return_level is
   case action of
     Buy (x) -> buy (x, level)
   | Sell (x) -> sell (x, level)
-  | PrepareBuy (x) -> approve(x, level)
+  | PrepareBuy (x) -> prepbuy(x, level)
   end

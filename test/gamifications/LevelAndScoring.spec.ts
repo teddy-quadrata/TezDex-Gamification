@@ -23,6 +23,7 @@ function getLevelStorage(dexAddr, scoreFA12Addr) {
         possible_ranks: ranks,
         multiplier: 1,
         owner: accounts.alice.pkh,
+        principal: 0,
     }
 
     return levelStorage
@@ -217,11 +218,11 @@ describe("BuildLevel()", function () {
         console.log((await (await wxtz.storage()).standards.allowances.get({1: accounts.alice.pkh, 0: scorer.address})))
         console.log((await (await wxtz.storage()).standards.allowances.get({1: accounts.alice.pkh, 0: dex.address})))
         console.log((await (await wxtz.storage()).standards.allowances.get({1: scorer.address, 0: dex.address})))
+        console.log((await (await wxtz.storage()).standards.allowances.get({0: dex.address, 1: scorer.address})))
         console.log((await (await wxtz.storage()).standards.allowances.get({1: dex.address, 0: scorer.address})))
         console.log((await (await wxtz.storage()).standards.allowances.get({0: accounts.alice.pkh,1: scorer.address})))
         console.log((await (await wxtz.storage()).standards.allowances.get({0: accounts.alice.pkh,1: dex.address})))
         console.log((await (await wxtz.storage()).standards.allowances.get({0: scorer.address, 1: dex.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({0: dex.address, 1: scorer.address})))
 
         const sell = await scorer.methods.sell(4).send()
         await sell.confirmation()
