@@ -213,6 +213,8 @@ describe("BuildLevel()", function () {
         const levelApproveDex = await scorer.methods.preSell(4).send()
         await levelApproveDex.confirmation()
 
+        console.log(scorer.parameterSchema.ExtractSignatures())
+
         const sell = await scorer.methods.sell(4).send()
         await sell.confirmation()
     })

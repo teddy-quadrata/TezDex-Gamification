@@ -10,6 +10,7 @@ type game_action is
 | PreSell of nat
 | Sell of sell_params
 | PostSell of unit
+| Default of unit
 
 (* main storage, also acts as score treasury *)
 type level_storage is record [

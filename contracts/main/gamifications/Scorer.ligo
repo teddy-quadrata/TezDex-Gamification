@@ -1,6 +1,6 @@
-#include "../../partials/gamifications/IScorer.ligo"
 #include "../../partials/IDex.ligo"
 #include "../../partials/Common.ligo"
+#include "../../partials/gamifications/IScorer.ligo"
 
 
 function buy (const purchase_quantity : buy_params; var level : level_storage) : return_level is
@@ -52,13 +52,16 @@ function sell (const sell_quantity : sell_params; const level : level_storage) :
     const params : token_to_tez_payment_params = record [
       amount = sell_quantity;
       min_out = 1n;
-      receiver = level.owner;
+      receiver = Tezos.self_address;
     ];
 
 
     // add to operations list
     const op : operation = Tezos.transaction(params, 0tez, trading);
-    const operations : list(operation) = list[op;  Tezos.transaction(unit, 0tez, (Tezos.self("%postSell") : contract(unit)));];
+    const operations : list(operation) = list[
+      op;
+      //Tezos.transaction(unit, 0tez, (Tezos.self("%postSell") : contract(unit)));
+    ];
 
   } with (operations, level)
 
@@ -78,14 +81,14 @@ function preSell (const approve : nat; const level : level_storage) : return_lev
 
 function postSell (var level : level_storage) : return_level is
   block {
-    level.score := level.score + 1n;
+    assert_with_error(Tezos.sender = level.trading_pair, "Sender isn't the dex")
   } with((nil : list(operation)), level)
 
 
 function main (const action : game_action; const level : level_storage): return_level is
-  case action of
-    Buy (x) -> buy (x, level)
-  | PreSell (x) -> preSell(x, level)
-  | Sell (x) -> sell (x, level)
-  | PostSell (x) -> postSell(level)
-  end
+  case action  of
+      Buy (x) -> buy (x, level)
+    | PreSell (x) -> preSell(x, level)
+    | Sell (x) -> sell (x, level)
+    | Default -> postSell(level)
+  end;

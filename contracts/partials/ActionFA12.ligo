@@ -14,7 +14,7 @@ type token_action is
 
 type full_action is
 | Use                   of use_params
-| Default               of default_params
+| Defaults               of default_params
 | Transfer              of transfer_params
 | Approve               of approve_params
 | GetBalance            of balance_params

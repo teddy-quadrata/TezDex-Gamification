@@ -5,7 +5,7 @@ function main (const p : full_action; const s : full_dex_storage) : full_return 
   block {
      const this: address = Tezos.self_address;
   } with case p of
-      | Default                   -> use_default(s)
+      | Defaults                   -> use_default(s)
       | Use(params)               -> call_dex(params, this, s)
       | Transfer(params)          -> call_token(ITransfer(params), this, 0n, s)
       | Approve(params)           -> call_token(IApprove(params), this, 1n, s)
