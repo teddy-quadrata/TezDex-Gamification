@@ -47,6 +47,7 @@ function sell (const sell_quantity : sell_params; const level : level_storage) :
     |None -> (failwith("Level not found") : contract(token_to_tez_payment_params))
     end;
 
+
     // create transaction operation args
     const params : token_to_tez_payment_params = record [
       amount = sell_quantity;
@@ -54,14 +55,15 @@ function sell (const sell_quantity : sell_params; const level : level_storage) :
       receiver = level.owner;
     ];
 
+
     // add to operations list
     const op : operation = Tezos.transaction(params, 0tez, trading);
-    const operations : list(operation) = list[op];
+    const operations : list(operation) = list[op;  Tezos.transaction(unit, 0tez, (Tezos.self("%postSell") : contract(unit)));];
 
   } with (operations, level)
 
 
-function prepbuy (const approve : nat; const level : level_storage) : return_level is
+function preSell (const approve : nat; const level : level_storage) : return_level is
   block {
 
 
@@ -73,9 +75,17 @@ function prepbuy (const approve : nat; const level : level_storage) : return_lev
     ];
   } with(operations, level)
 
+
+function postSell (var level : level_storage) : return_level is
+  block {
+    level.score := level.score + 1n;
+  } with((nil : list(operation)), level)
+
+
 function main (const action : game_action; const level : level_storage): return_level is
   case action of
     Buy (x) -> buy (x, level)
+  | PreSell (x) -> preSell(x, level)
   | Sell (x) -> sell (x, level)
-  | PrepareBuy (x) -> prepbuy(x, level)
+  | PostSell (x) -> postSell(level)
   end

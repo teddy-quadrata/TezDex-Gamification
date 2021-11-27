@@ -207,22 +207,11 @@ describe("BuildLevel()", function () {
 
     it("sells tokens and swaps from quipu", async () => {
 
-
         const approveLevel = await wxtz.methods.approve(scorer.address, 4).send()
         await approveLevel.confirmation()
 
-
-        const levelApproveDex = await scorer.methods.prepareBuy(4).send()
+        const levelApproveDex = await scorer.methods.preSell(4).send()
         await levelApproveDex.confirmation()
-
-        console.log((await (await wxtz.storage()).standards.allowances.get({1: accounts.alice.pkh, 0: scorer.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({1: accounts.alice.pkh, 0: dex.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({1: scorer.address, 0: dex.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({0: dex.address, 1: scorer.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({1: dex.address, 0: scorer.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({0: accounts.alice.pkh,1: scorer.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({0: accounts.alice.pkh,1: dex.address})))
-        console.log((await (await wxtz.storage()).standards.allowances.get({0: scorer.address, 1: dex.address})))
 
         const sell = await scorer.methods.sell(4).send()
         await sell.confirmation()

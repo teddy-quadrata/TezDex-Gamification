@@ -6,9 +6,10 @@ type sell_params is nat
 
 (* gamification features *)
 type game_action is
-| Buy of buy_params
+ Buy of buy_params
+| PreSell of nat
 | Sell of sell_params
-| PrepareBuy of nat
+| PostSell of unit
 
 (* main storage, also acts as score treasury *)
 type level_storage is record [
