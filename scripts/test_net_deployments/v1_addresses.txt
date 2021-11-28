@@ -1,0 +1,25 @@
+yarn run v1.22.11
+$ ts-mocha
+
+
+  BuildLevel()
+BuildLevel Test
+Waiting for confirmation of origination for WXTZ: KT1BPoewfRbaonhMTqbukeNLMPxyH8itYmDf...
+WXTZ Origination completed.
+Waiting for confirmation of origination for ScoreFA12: KT1QTVq7xqaQzFFWBkyvDZofKQ4Sq6x7ATeY...
+ScoreFA12 Origination completed.
+Waiting for confirmation of origination for Dex: KT1TmaLdNqKzBSr4UsBZRSCvkvMn1SHKch9Q...
+Dex Origination completed.
+Transfering 1.3 tez to KT1TmaLdNqKzBSr4UsBZRSCvkvMn1SHKch9Q...
+Waiting for oofojeRkgaLk31AnnzVzXc3RoHV68T8cvFx4NqRBnTtJ2JyHRQW to be confirmed...
+Operation injected: oofojeRkgaLk31AnnzVzXc3RoHV68T8cvFx4NqRBnTtJ2JyHRQW
+Waiting for confirmation of origination for Scorer: KT19MZYkKgeZZ4TRUYrEQKnPZE9K9Dvop35G...
+Scorer Origination completed.
+    ✓ succeeds at calling tez_to_tokens and tokens_to_tez (45555ms)
+    ✓ buys tokens and swaps from quipu (16974ms)
+    ✓ sells tokens and swaps from quipu (61041ms)
+
+
+  3 passing (5m)
+
+Done in 297.13s.
