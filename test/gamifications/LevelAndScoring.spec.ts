@@ -1,4 +1,4 @@
-import { InMemorySigner } from "@taquito/signer";
+import { importKey, InMemorySigner } from "@taquito/signer";
 import { MichelCodecPacker, MichelsonMap, TezosToolkit } from "@taquito/taquito"
 import BigNumber from "bignumber.js";
 
@@ -10,6 +10,9 @@ const accounts = require('../../scripts/sandbox/accounts')
 
 const token_to_tez = require('../../contracts/partials/gamifications/lambda1.tz.json')
 const tez_to_tokens = require('../../contracts/partials/gamifications/lambda2.tz.json')
+
+const useTestNet = true
+
 
 function getLevelStorage(dexAddr, scoreFA12Addr, levelTokenFA12Addr) {
     const ranks = new MichelsonMap();
@@ -23,7 +26,7 @@ function getLevelStorage(dexAddr, scoreFA12Addr, levelTokenFA12Addr) {
         current_rank: 0,
         possible_ranks: ranks,
         multiplier: 1,
-        owner: accounts.alice.pkh,
+        owner: getAlice().pkh,
         principal: 0,
     }
 
@@ -102,6 +105,28 @@ function getExtendedFA12(admins) {
 }
 
 
+function getAlice() {
+
+    if(useTestNet){
+        return accounts.alice_hangzhounet;
+    }
+
+    if(!useTestNet) {
+        return accounts.alice;
+    }
+}
+
+function getRpc() {
+
+    if(useTestNet){
+        return 'https://hangzhounet.api.tez.ie';
+    }
+
+    if(!useTestNet) {
+        return 'http://localhost:8732';
+    }
+}
+
 
 
 describe("BuildLevel()", function () {
@@ -115,14 +140,29 @@ describe("BuildLevel()", function () {
 
     before(async () => {
         console.log("BuildLevel Test")
-        const tezos = new TezosToolkit('http://localhost:8732');
-        tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(accounts.alice.sk) })
+        const tezos = new TezosToolkit(getRpc());
+
+        if(!useTestNet) {
+            tezos.setProvider({ signer: await InMemorySigner.fromSecretKey(getAlice().sk) })
+        }
+
+        if(useTestNet) {
+            importKey(
+                tezos,
+                getAlice().email,
+                getAlice().password,
+                getAlice().mnemonic.join(' '),
+                getAlice().activation_code
+              );
+        }
+
+
         tezos.setPackerProvider(new MichelCodecPacker());
 
         // deploy wxtz
         await tezos.contract.originate({
             code: dummyFA12JsonCode.text_code,
-            storage: getExtendedFA12([accounts.alice.pkh]),
+            storage: getExtendedFA12([getAlice().pkh]),
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for WXTZ: ${originationOp.contractAddress}...`);
             return originationOp.contract();
@@ -135,7 +175,7 @@ describe("BuildLevel()", function () {
         // deploy ScoreFA12
         await tezos.contract.originate({
             code: scoreFA12JsonCode.text_code,
-            storage: getExtendedFA12([accounts.alice.pkh]),
+            storage: getExtendedFA12([getAlice().pkh]),
         }).then((originationOp) => {
             console.log(`Waiting for confirmation of origination for ScoreFA12: ${originationOp.contractAddress}...`);
             return originationOp.contract();
@@ -193,13 +233,13 @@ describe("BuildLevel()", function () {
     });
 
     it("succeeds at calling tez_to_tokens and tokens_to_tez", async () => {
-        const swap1 = await dex.methods.tezToTokenPayment(6, accounts.alice.pkh).send({amount: 100, mutez: true})
+        const swap1 = await dex.methods.tezToTokenPayment(6, getAlice().pkh).send({amount: 100, mutez: true})
         await swap1.confirmation()
 
         const approveDex = await wxtz.methods.approve(dex.address, 16).send()
         await approveDex.confirmation()
 
-        const swap2 = await dex.methods.tokenToTezPayment(16, 1, accounts.alice.pkh).send()
+        const swap2 = await dex.methods.tokenToTezPayment(16, 1, getAlice().pkh).send()
         await swap2.confirmation()
 
     })
