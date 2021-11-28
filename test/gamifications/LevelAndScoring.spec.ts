@@ -1,6 +1,7 @@
 import { importKey, InMemorySigner } from "@taquito/signer";
 import { MichelCodecPacker, MichelsonMap, TezosToolkit } from "@taquito/taquito"
 import BigNumber from "bignumber.js";
+import { transferToContract } from "../utils/Utils";
 
 const scorerJsonCode = require('../../contracts/main/gamifications/Scorer.tz.json')
 const dexJsonCode = require('../../contracts/main/DexFA12.tz.json')
@@ -11,7 +12,7 @@ const accounts = require('../../scripts/sandbox/accounts')
 const token_to_tez = require('../../contracts/partials/gamifications/lambda1.tz.json')
 const tez_to_tokens = require('../../contracts/partials/gamifications/lambda2.tz.json')
 
-const useTestNet = true
+const useTestNet = false
 
 
 function getLevelStorage(dexAddr, scoreFA12Addr, levelTokenFA12Addr) {
@@ -200,16 +201,7 @@ describe("BuildLevel()", function () {
 
 
         // give Dex KT 1300 mutez
-        const amount = 1.3;
-        console.log(`Transfering ${amount} tez to ${dex.address}...`);
-        await tezos.contract.transfer({
-            to: accounts.bob.pkh, amount: amount
-        }).then(async (op) => {
-            console.log(`Waiting for ${op.hash} to be confirmed...`);
-            return op.confirmation(1).then(() => op.hash);
-        }).then((hash) => {
-            console.log(`Operation injected: ${hash}`)
-        }).catch((error) => console.log(`Error: ${error} ${JSON.stringify(error, null, 2)}`));
+        // Todo
 
         // give Dex KT 1000 wxtz tokens
         const op = await wxtz.methods.mint(dex.address, 1000).send()
