@@ -130,7 +130,7 @@ function getRpc() {
 
 
 describe("BuildLevel()", function () {
-    this.timeout(60000)
+    this.timeout(60000 * 30) // 30 min timeout
 
     let scorer, dex
     let wxtz, scoreFA12
