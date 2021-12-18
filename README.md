@@ -1,6 +1,16 @@
 # Description
 
-This project is a fork of quipuswap and adds logic that makes defi into a game with on chain scoring metrics and player levels calculated on chain.
+This project is a fork of quipuswap and adds logic that makes defi into a game with on chain scoring metrics and player levels calculated on chain. You can run the dapp here: https://main.d1vpiqu7jccsn6.amplifyapp.com
+
+I didn't get this working in a complete sense. I'm missing a factory contract for converting the trading pair contracts into levels. I'm also missing a tilemap UI. I intended on making a pokemon style rpg interface for trading in the dapp and doing the defi tasks.
+I do have:
+- Score Tokens
+- Level Contract
+- Tests
+- Front End
+- Scoring
+- Ranks
+But it isn't yet playable.
 
 
 # Prerequisites
