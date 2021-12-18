@@ -8,7 +8,7 @@ I do have:
 - Level Contract
 - Tests
 - Front End
-- Scoring
+- Scoring System (Read more about it here: https://main.d1vpiqu7jccsn6.amplifyapp.com/help)
 - Ranks
 
 
