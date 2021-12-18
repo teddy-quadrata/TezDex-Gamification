@@ -10,7 +10,9 @@ I do have:
 - Front End
 - Scoring
 - Ranks
-But it isn't yet playable.
+
+
+#But it isn't yet playable.
 
 
 # Prerequisites
