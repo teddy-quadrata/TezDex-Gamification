@@ -12,7 +12,7 @@ I do have:
 - Ranks
 
 
-#But it isn't yet playable.
+But it isn't yet playable.
 
 
 # Prerequisites
